@@ -42,6 +42,11 @@ namespace PRN222.Lab2.Repositories
             return await _dbSet.FindAsync(id);
         }
 
+        public async Task<T> GetByNameAsync(string name)
+        {
+            return await _dbSet.FirstOrDefaultAsync(e => EF.Property<string>(e, "EmailAddress") == name);
+        }
+
         public async Task UpdateAsync(T entity)
         {
             _dbSet.Update(entity);

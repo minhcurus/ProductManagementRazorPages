@@ -23,7 +23,7 @@ namespace PRN222.Lab2.MVC.Pages.Products
 
         public async Task<IActionResult> OnGetAsync()
         {
-            if (!string.IsNullOrEmpty(HttpContext.Session.GetString("Account")))
+            if (!string.IsNullOrEmpty(HttpContext.Session.GetString("UserId")))
             {
                 Product = await _productService.GetAllProduct();
                 return Page();

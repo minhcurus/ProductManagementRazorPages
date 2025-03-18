@@ -25,6 +25,11 @@ namespace PRN222.Lab2.Services
         {
             return await _unitOfWork.Accounts.GetByIdAsync(id);
         }
+        public async Task<AccountMember> GetAccountMemberByEmail(string email)
+        {
+            return await _unitOfWork.Accounts.GetByNameAsync(email);
+        }
+
         public async Task AddAccountMember(AccountMember account)
         {
             await _unitOfWork.Accounts.AddAsync(account);

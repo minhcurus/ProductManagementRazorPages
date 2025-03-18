@@ -14,6 +14,7 @@ namespace PRN222.Lab2.Services.Interfaces
         Task<List<AccountMember>> GetAllAccountMembers();
 
         Task<AccountMember> GetAccountMemberById(int id);
+        Task<AccountMember> GetAccountMemberByEmail(string email);
 
         Task AddAccountMember(AccountMember account);
 

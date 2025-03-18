@@ -32,12 +32,7 @@ namespace PRN222.Lab2.MVC
             builder.Services.AddScoped<IAccountService, AccountService>();
 
 
-            builder.Services.AddSession(options =>
-            {
-                options.IdleTimeout = TimeSpan.FromMinutes(20); // Set session timeout
-                options.Cookie.HttpOnly = true; // For security
-                options.Cookie.IsEssential = true; // Ensure session cookie is always created
-            });
+            builder.Services.AddSession();
 
 
 
