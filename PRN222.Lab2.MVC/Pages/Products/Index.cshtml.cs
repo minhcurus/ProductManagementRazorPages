@@ -21,9 +21,15 @@ namespace PRN222.Lab2.MVC.Pages.Products
 
         public IList<Product> Product { get;set; } = default!;
 
-        public async Task OnGetAsync()
+        public async Task<IActionResult> OnGetAsync()
         {
-            Product = await _productService.GetAllProduct();
+            if (!string.IsNullOrEmpty(HttpContext.Session.GetString("Account")))
+            {
+                Product = await _productService.GetAllProduct();
+                return Page();
+            }
+            return RedirectToPage("/Login");
         }
+
     }
 }

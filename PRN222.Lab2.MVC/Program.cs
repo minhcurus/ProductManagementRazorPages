@@ -21,6 +21,7 @@ namespace PRN222.Lab2.MVC
 
             // Add services to the container.
             builder.Services.AddRazorPages();
+            builder.Services.AddSignalR();
 
             builder.Services.AddScoped<IGenericRepository<AccountMember>, GenericRepository<AccountMember>>();
             builder.Services.AddScoped<IGenericRepository<Category>, GenericRepository<Category>>();
@@ -52,6 +53,7 @@ namespace PRN222.Lab2.MVC
 
 
             app.UseSession();
+            app.MapHub<SignalRServer>("/signalRServer");
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
