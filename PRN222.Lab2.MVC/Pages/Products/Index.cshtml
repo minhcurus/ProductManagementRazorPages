@@ -7,6 +7,13 @@
 
 <h1>Index</h1>
 
+<form method="get">
+    <div class="form-group">
+        <input type="text" name="searchString" value="@Model.SearchString" placeholder="Search by name..." />
+        <button type="submit" class="btn btn-primary">Search</button>
+    </div>
+</form>
+
 <p>
     <a asp-page="Create">Create New</a>
 </p>
@@ -14,16 +21,22 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Product[0].ProductName)
+                <a asp-page="./Index" asp-route-sortOrder="ProductName">
+                    @Html.DisplayNameFor(model => model.Product[0].ProductName)
+                </a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Product[0].UnitsInStock)
+                <a asp-page="./Index" asp-route-sortOrder="UnitsInStock">
+                    @Html.DisplayNameFor(model => model.Product[0].UnitsInStock)
+                </a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Product[0].UnitPrice)
+                <a asp-page="./Index" asp-route-sortOrder="UnitPrice">
+                    @Html.DisplayNameFor(model => model.Product[0].UnitPrice)
+                </a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Product[0].Category)
+                @Html.DisplayNameFor(model => model.Product[0].Category.CategoryName)
             </th>
             <th></th>
         </tr>
@@ -52,5 +65,22 @@
 }
     </tbody>
 </table>
+
+<div>
+    @if (Model.TotalPages > 1)
+    {
+        <nav>
+            <ul class="pagination">
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                        <a class="page-link" asp-page="./Index" asp-route-currentPage="@i" asp-route-searchString="@Model.SearchString" asp-route-sortOrder="@Model.CurrentSortOrder">@i</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+</div>
+
 <script src="~/js/microsoft/signalr/dist/browser/signalr.js"></script>
 <script src="~/js/site.js"></script>
