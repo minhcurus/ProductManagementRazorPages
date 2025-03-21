@@ -48,52 +48,33 @@ namespace PRN222.Lab2.Services
         }
 
         public async Task<(List<Product> Items, int TotalCount)> GetPagedAsync(
-                int pageNumber = 1, 
-                int pageSize = 10, 
-                string sortOrder = null, 
-                bool ascending = true, 
-                string searchString = null)
+            int pageNumber,
+            int pageSize,
+            string sortOrder,
+            bool ascending,
+            string searchString)
         {
-            var query =  _context.Products.Include(p => p.Category) .AsQueryable();
-
-            // Seartch
+            Expression<Func<Product, bool>> filter = null;
             if (!string.IsNullOrEmpty(searchString))
             {
-                query = query.Where(p => p.ProductName.Contains(searchString));
+                filter = p => p.ProductName.Contains(searchString);
             }
 
-            // Sort
-            if (!string.IsNullOrEmpty(sortOrder))
+            Expression<Func<Product, object>> orderBy = sortOrder switch
             {
-                switch (sortOrder)
-                {
-                    case "ProductName":
-                        query = ascending ? query.OrderBy(p => p.ProductName) : query.OrderByDescending(p => p.ProductName);
-                        break;
-                    case "UnitsInStock":
-                        query = ascending ? query.OrderBy(p => p.UnitsInStock) : query.OrderByDescending(p => p.UnitsInStock);
-                        break;
-                    case "UnitPrice":
-                        query = ascending ? query.OrderBy(p => p.UnitPrice) : query.OrderByDescending(p => p.UnitPrice);
-                        break;
-                    default:
-                        query = query.OrderBy(p => p.ProductId); 
-                        break;
-                }
-            }
-            else
-            {
-                query = query.OrderBy(p => p.ProductId); 
-            }
+                "ProductName" => p => p.ProductName,
+                "UnitsInStock" => p => p.UnitsInStock,
+                "UnitPrice" => p => p.UnitPrice,
+                _ => p => p.ProductId
+            };
 
-            var totalCount = await query.CountAsync();
-
-            var items = await query
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
-
-            return (items, totalCount);
+            return await _unitOfWork.Products.GetPagedAsync(
+                pageNumber,
+                pageSize,
+                filter,
+                orderBy,
+                ascending
+            );
         }
     }
 }

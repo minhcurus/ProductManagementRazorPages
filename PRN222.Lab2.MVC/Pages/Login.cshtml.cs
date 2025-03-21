@@ -1,8 +1,11 @@
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using PRN222.Lab2.Repositories.Models;
 using PRN222.Lab2.Services.Interfaces;
+using System.Security.Claims;
 
 namespace PRN222.Lab2.MVC.Pages
 {
@@ -17,8 +20,7 @@ namespace PRN222.Lab2.MVC.Pages
 
         public async Task<IActionResult> OnGetAsync()
         {
-            var userID = HttpContext.Session.GetString("UserId");
-            if (!string.IsNullOrEmpty(userID))
+            if (User.Identity.IsAuthenticated) // Kiểm tra user đã đăng nhập hay chưa
             {
                 return RedirectToPage("/Products/Index");
             }
@@ -29,53 +31,32 @@ namespace PRN222.Lab2.MVC.Pages
         public AccountMember AccountMember { get; set; } = default!;
         public string ErrorMessage { get; set; }
 
-        // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
         public async Task<IActionResult> OnPostAsync()
         {
-            var userID = HttpContext.Session.GetString("UserId");
-            if (!string.IsNullOrEmpty(userID))
-            {
-                return RedirectToPage("/Products/Index");
-            }
-
             var user = await _accountService.GetAccountMemberByEmail(AccountMember.EmailAddress);
-
 
             if (user != null && user.MemberPassword == AccountMember.MemberPassword)
             {
-                HttpContext.Session.SetString("UserId", user.MemberId.ToString());
-                HttpContext.Session.SetString("Username", user.FullName);
-                HttpContext.Session.SetInt32("Role", user.MemberRole);
+                var claims = new List<Claim>{
+                new Claim(ClaimTypes.NameIdentifier, user.MemberId.ToString()),
+                new Claim(ClaimTypes.Name, user.FullName),
+                new Claim(ClaimTypes.Role, user.MemberRole.ToString())
+                };
 
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var authProperties = new AuthenticationProperties
+                {
+                    IsPersistent = true, // Giữ đăng nhập ngay cả khi đóng trình duyệt
+                    ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(30) // Hết hạn sau 30 phút
+                };
 
-                Console.WriteLine($"Saved UserId: {HttpContext.Session.GetString("UserId")}");
-                Console.WriteLine($"Saved Username: {HttpContext.Session.GetString("Username")}");
-                Console.WriteLine($"Saved Role: {HttpContext.Session.GetInt32("Role")}");
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
 
                 return RedirectToPage("/Products/Index");
             }
 
             ModelState.AddModelError("", "Invalid username or password.");
             return Page();
-
-            //if (memberAccount == null)
-            //{
-            //    ErrorMessage = "You do not have permission to do this function!";
-            //    ModelState.AddModelError(string.Empty, ErrorMessage);
-
-            //    return Page();
-            //}
-            //else if (memberAccount.MemberRole == 1 || memberAccount.MemberRole == 2)
-            //{
-            //    HttpContext.Session.SetInt32("Account", memberAccount?.MemberRole ?? 0);
-            //    return RedirectToPage("/Products/Index");
-            //}
-            //else
-            //{
-            //    ErrorMessage = "You do not have permission to do this function!";
-            //    ModelState.AddModelError(string.Empty, ErrorMessage);
-            //    return Page();
-            //}
         }
 
     }

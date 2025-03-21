@@ -24,11 +24,11 @@ namespace PRN222.Lab2.Services.Interfaces
         Task DeleteProduct(Product product);
 
         Task<(List<Product> Items, int TotalCount)> GetPagedAsync(
-        int pageNumber = 1,
-        int pageSize = 10,
-        string sortOrder = null,
-        bool ascending = true,
-        string searchString = null);
+            int pageNumber,
+            int pageSize,
+            string sortOrder,
+            bool ascending,
+            string searchString);
 
     }
 }

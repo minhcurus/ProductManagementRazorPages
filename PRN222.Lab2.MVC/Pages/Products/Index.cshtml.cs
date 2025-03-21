@@ -37,7 +37,7 @@ namespace PRN222.Lab2.MVC.Pages.Products
 
         public async Task<IActionResult> OnGetAsync(string sortOrder, int currentPage = 1)
         {
-            if (!string.IsNullOrEmpty(HttpContext.Session.GetString("UserId")))
+            if (User.Identity.IsAuthenticated)
             {
                 CurrentSortOrder = sortOrder;
 

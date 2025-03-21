@@ -4,6 +4,7 @@ using PRN222.Lab2.Repositories.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -51,6 +52,37 @@ namespace PRN222.Lab2.Repositories
         {
             _dbSet.Update(entity);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<(List<T> Items, int TotalCount)> GetPagedAsync(
+            int pageNumber,
+            int pageSize,
+            Expression<Func<T, bool>> filter = null,
+            Expression<Func<T, object>> orderBy = null,
+            bool ascending = true)
+        {
+            IQueryable<T> query = _dbSet;
+
+            // Luôn nối với Category nếu là Product
+            if (typeof(T) == typeof(Product))
+            {
+                query = query.Include("Category");
+            }
+
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+
+            if (orderBy != null)
+            {
+                query = ascending ? query.OrderBy(orderBy) : query.OrderByDescending(orderBy);
+            }
+
+            int totalCount = await query.CountAsync();
+            var items = await query.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+
+            return (items, totalCount);
         }
     }
 
