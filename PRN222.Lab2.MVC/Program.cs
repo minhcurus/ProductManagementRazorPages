@@ -36,12 +36,16 @@ namespace PRN222.Lab2.MVC
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
               .AddCookie(options =>
             {
-                options.LoginPath = "/Account/Login"; 
-                options.AccessDeniedPath = "/Account/AccessDenied"; 
+                options.LoginPath = "/Login"; 
+                options.AccessDeniedPath = "/AccessDenied"; 
                 options.ExpireTimeSpan = TimeSpan.FromMinutes(30); 
             });
 
-            builder.Services.AddAuthorization();
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("1", policy => policy.RequireRole("1"));
+                options.AddPolicy("2", policy => policy.RequireRole("2"));
+            });
 
             var app = builder.Build();
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -12,6 +13,7 @@ using PRN222.Lab2.Services.Interfaces;
 
 namespace PRN222.Lab2.MVC.Pages.Products
 {
+    [Authorize(Roles = "1")]
     public class CreateModel : PageModel
     {
         private readonly IProductService _productService;
@@ -24,7 +26,7 @@ namespace PRN222.Lab2.MVC.Pages.Products
             _categoryService = categoryService;
             _hubContext = hubContext;
         }
-
+        
         public async Task<IActionResult> OnGet()
         {
         ViewData["CategoryId"] = new SelectList( await _categoryService.GetAllCategory(), "CategoryId", "CategoryName");
@@ -34,7 +36,6 @@ namespace PRN222.Lab2.MVC.Pages.Products
         [BindProperty]
         public Product Product { get; set; } = default!;
 
-        // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         { 
             await _productService.AddProduct(Product);

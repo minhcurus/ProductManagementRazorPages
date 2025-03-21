@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Drawing.Printing;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
@@ -12,6 +15,7 @@ using PRN222.Lab2.Services.Interfaces;
 
 namespace PRN222.Lab2.MVC.Pages.Products
 {
+    [Authorize(Roles = "1,2")]
     public class IndexModel : PageModel
     {
         private readonly IProductService _productService;
@@ -34,7 +38,7 @@ namespace PRN222.Lab2.MVC.Pages.Products
 
         public string CurrentSortOrder { get; set; }
 
-
+        
         public async Task<IActionResult> OnGetAsync(string sortOrder, int currentPage = 1)
         {
             if (User.Identity.IsAuthenticated)
@@ -58,5 +62,10 @@ namespace PRN222.Lab2.MVC.Pages.Products
             return RedirectToPage("/Login");
         }
 
+        public async Task<IActionResult> OnPostLogoutAsync()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToPage("/Login");
+        }
     }
 }

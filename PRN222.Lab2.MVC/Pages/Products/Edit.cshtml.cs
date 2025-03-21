@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -13,6 +14,7 @@ using PRN222.Lab2.Services.Interfaces;
 
 namespace PRN222.Lab2.MVC.Pages.Products
 {
+    [Authorize(Roles = "1")]
     public class EditModel : PageModel
     {
         private readonly IProductService _productService;
@@ -29,6 +31,7 @@ namespace PRN222.Lab2.MVC.Pages.Products
         [BindProperty]
         public Product Product { get; set; } = default!;
 
+        
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (id == null)
@@ -46,8 +49,7 @@ namespace PRN222.Lab2.MVC.Pages.Products
             return Page();
         }
 
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more information, see https://aka.ms/RazorPagesCRUD.
+        
         public async Task<IActionResult> OnPostAsync()
         {
             try
