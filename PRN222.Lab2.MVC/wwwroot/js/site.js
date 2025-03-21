@@ -11,6 +11,14 @@ connection.on("LoadAllItems", function () {
     location.href = '/Products/Index';
 });
 
+connection.on("ProductDeleted", function () {
+    location.href = '/Products/Index';
+});
+connection.on("ProductUpdated", function () {
+    location.href = '/Products/Index';
+});
+
+
 connection.start().catch(function (err) {
     return console.error(err.toString());
 });

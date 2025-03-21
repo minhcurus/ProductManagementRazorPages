@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using PRN222.Lab2.Repositories.Models;
+using PRN222.Lab2.Services;
 using PRN222.Lab2.Services.Interfaces;
 
 namespace PRN222.Lab2.MVC.Pages.Products
@@ -15,11 +17,13 @@ namespace PRN222.Lab2.MVC.Pages.Products
     {
         private readonly IProductService _productService;
         private readonly ICategoryService _categoryService;
+        private readonly IHubContext<SignalRServer> _hubContext;
 
-        public EditModel(IProductService productService, ICategoryService categoryService)
+        public EditModel(IProductService productService, ICategoryService categoryService, IHubContext<SignalRServer> hubContext)
         {
             _productService = productService;
             _categoryService = categoryService;
+            _hubContext = hubContext;
         }
 
         [BindProperty]
@@ -49,6 +53,7 @@ namespace PRN222.Lab2.MVC.Pages.Products
             try
             {
                 await _productService.UpdateProduct(Product);
+                await _hubContext.Clients.All.SendAsync("ProductUpdated");
             }
             catch (DbUpdateConcurrencyException)
             {

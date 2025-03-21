@@ -4,8 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using PRN222.Lab2.Repositories.Models;
+using PRN222.Lab2.Services;
 using PRN222.Lab2.Services.Interfaces;
 
 namespace PRN222.Lab2.MVC.Pages.Products
@@ -13,10 +15,12 @@ namespace PRN222.Lab2.MVC.Pages.Products
     public class DeleteModel : PageModel
     {
         private readonly IProductService _productService;
+        private readonly IHubContext<SignalRServer> _hubContext;
 
-        public DeleteModel(IProductService productService)
+        public DeleteModel(IProductService productService, IHubContext<SignalRServer> hubContext)
         {
             _productService = productService;
+            _hubContext = hubContext;
         }
 
         [BindProperty]
@@ -54,6 +58,7 @@ namespace PRN222.Lab2.MVC.Pages.Products
             {
                 Product = product;
                 await _productService.DeleteProduct(Product);
+                await _hubContext.Clients.All.SendAsync("ProductDeleted");
 
             }
 
